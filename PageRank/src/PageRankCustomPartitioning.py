@@ -63,7 +63,7 @@ if __name__ == "__main__":
     #     URL         neighbor URL
     #     URL         neighbor URL
     #
-    lines = sc.textFile("hdfs:///web-BerkStan1.txt");
+    lines = sc.textFile("hdfs:///web-BerkStan1.txt").partitionBy(100);
     #lines = sc.textFile("web-BerkStan.txt")
     #lines = spark.read.text(sys.argv[1]).rdd.map(lambda r: r[0])
 
