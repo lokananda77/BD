@@ -76,12 +76,12 @@ if __name__ == "__main__":
     #     URL         neighbor URL
     #     URL         neighbor URL
     #
-    lines = sc.textFile("hdfs:///web-BerkStan1.txt").partitionBy(100);
+    lines = sc.textFile("hdfs:///web-BerkStan1.txt");
     #lines = sc.textFile("web-BerkStan.txt")
     #lines = spark.read.text(sys.argv[1]).rdd.map(lambda r: r[0])
 
     # Loads all URLs from input file and initialize their neighbors.
-    links = lines.map(lambda urls: parseNeighbors(urls)).distinct().groupByKey()
+    links = lines.map(lambda urls: parseNeighbors(urls)).distinct().partitionBy(16).groupByKey()
 
     # Loads all URLs with other URL(s) link to from input file and initialize ranks of them to one.
     ranks = links.map(lambda url_neighbors: (url_neighbors[0], 1.0))
