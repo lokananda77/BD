@@ -53,6 +53,7 @@ if __name__ == "__main__":
           file=sys.stderr)
 
     sparkConf = SparkConf().setAppName("CS-838-Assignment2-PartA-1")\
+    .setMaster("spark://10.254.0.160:7077")\
     .set("spark.executor.memory", "1G")\
     .set("spark.eventLog.enabled", "true")\
     .set("spark.evenLog.dir", "file:///tmp/test")\
@@ -62,26 +63,25 @@ if __name__ == "__main__":
     
     sc = SparkContext(conf = sparkConf)
     
-#     # Initialize the spark context.
-#     spark = SparkSession\
-#         .builder\
-#         .appName("CS-838-Assignment2-PartA-1")\
-#         .config("spark.executor.memory", "1G")\
-#         .getOrCreate()
+    # Initialize the spark context.
+    #spark = SparkSession\
+    #    .builder\
+    #    .appName("CS-838-Assignment2-PartA-1")\
+    #    .config("spark.executor.memory", "1G")\
+    #    .getOrCreate()
 
     
     # Loads in input file. It should be in format of:
     #     URL         neighbor URL
-    #     URL             neighbor URL
+    #     URL         neighbor URL
     #     URL         neighbor URL
     #
-    #lines = sc.textFile("hdfs://web-BerkStan.txt._COPYING_");
-    lines = sc.textFile("web-BerkStan.txt")
-    print(lines.getNumPartitions())
+    lines = sc.textFile("hdfs:///web-BerkStan1.txt");
+    #lines = sc.textFile("web-BerkStan.txt")
     #lines = spark.read.text(sys.argv[1]).rdd.map(lambda r: r[0])
 
     # Loads all URLs from input file and initialize their neighbors.
-    links = lines.map(lambda urls:  (urls)).distinct().groupByKey().cache()
+    links = lines.map(lambda urls: parseNeighbors(urls)).distinct().groupByKey()
 
     # Loads all URLs with other URL(s) link to from input file and initialize ranks of them to one.
     ranks = links.map(lambda url_neighbors: (url_neighbors[0], 1.0))
@@ -94,9 +94,8 @@ if __name__ == "__main__":
 
         # Re-calculates URL ranks based on neighbor contributions.
         ranks = contribs.reduceByKey(add).mapValues(lambda rank: rank * 0.85 + 0.15)
-    ranks.toDebugString()
+
     # Collects all URL ranks and dump them to console.
     for (link, rank) in ranks.collect():
         print("%s has rank: %s." % (link, rank))
-
-#     spark.stop()
+    sc.stop()
