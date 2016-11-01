@@ -15,26 +15,26 @@ spark = SparkSession\
     
     
 # Create DataFrame representing the stream of input lines from connection to localhost:9999
-lines = spark\
-   .readStream\
-   .format('socket')\
-   .option('host', 'localhost')\
-   .option('port', 9999)\
-   .load()
+# lines = spark\
+#    .readStream\
+#    .format('socket')\
+#    .option('host', 'localhost')\
+#    .option('port', 9999)\
+#    .load()
 
 
 userSchema = StructType().add("name", "string").add("age", "integer")
-csvDF = spark \
-    .readStream() \
-    .option("sep", ";") \
-    .schema(userSchema) \
+csvDF = spark\
+    .readStream\
+    .option("sep", ";")\
+    .schema(userSchema)\
     .csv("/split_dataset_monitored") 
     
     
 # Split the lines into words
-words = lines.select(
+words = csvDF.select(
    explode(
-       split(lines.value, ' ')
+       split(csvDF.value, ' ')
    ).alias('word')
 )
  
