@@ -10,19 +10,9 @@ from pyspark.sql.types import StructType
 
 spark = SparkSession\
     .builder\
-    .appName("StructuredNetworkWordCount")\
+    .appName("CS-838-Assignment2-PartB")\
     .getOrCreate()
     
-    
-# Create DataFrame representing the stream of input lines from connection to localhost:9999
-# lines = spark\
-#    .readStream\
-#    .format('socket')\
-#    .option('host', 'localhost')\
-#    .option('port', 9999)\
-#    .load()
-
-
 userSchema = StructType().add("userA", "integer").add("userB", "integer").add("timestamp", "timestamp").add("interaction", "string")
 csvDF = spark\
     .readStream\
