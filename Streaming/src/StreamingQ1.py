@@ -19,15 +19,11 @@ csvDF = spark\
     .option("sep", ",")\
     .schema(userSchema)\
     .csv("/split_dataset_monitored") 
-    
-    
-#words = csvDF.select("userA")
+     
+# Generate running count of RT, MT and RE
+
+intCounts = csvDF.groupBy(window(csvDF.timestamp, '1 hour', '30 minutes'), csvDF.interaction).count()
  
-# Generate running word count
-#wordCounts = words.groupBy('name').count()
-csvDF.printSchema()
-intCounts = csvDF.groupBy(window(csvDF.timestamp, '10 minutes', '5 minutes'), csvDF.interaction).count()
-#MTDataFrame = spark.sql("select interaction,count(*) as total from wordCounts group by interaction") 
 query = intCounts\
     .writeStream\
     .outputMode('complete')\
